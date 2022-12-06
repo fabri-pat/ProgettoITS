@@ -73,7 +73,6 @@ namespace app.Services
             return claimsPrincipal;
         }
 
-
         public RefreshTokenDto GenerateRefreshToken()
         {
             var refreshToken = new RefreshTokenDto

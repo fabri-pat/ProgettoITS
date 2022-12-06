@@ -1,13 +1,10 @@
 
-using System.Security.Claims;
 using app.Dtos;
 using app.MyException;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 
-namespace app.Authorization
+namespace app.Middleware.Authorization
 {
     public class AuthMiddleware
     {
@@ -28,40 +25,36 @@ namespace app.Authorization
             {
                 var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
 
-                /* try
-                {
-                    if (token != null)
-                        tokenService.ValidateAccessToken(token);
-
-                    throw new SecurityTokenException("Bearer token not received");
-                }
-                catch (SecurityTokenException)
-                {
-                    context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
-
-                    if (refreshToken == null)
-                        throw new UserNeedToLoginException();
-
-                    var Tokens = await userRepository.RefreshTokenAsync(refreshToken);
-
-                    SetRefreshToken(Tokens.RefreshToken, context);
-                } */
-
                 if (token == null)
                 {
-                    context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+                    token = await TryGetNewJwtTokenUsingRefreshTokenAsync(context, userRepository);
+                }
 
-                    if (refreshToken == null)
-                        throw new UserNeedToLoginException();
-
-                    var Tokens = await userRepository.RefreshTokenAsync(refreshToken);
-
-                    context.Request.Headers.Cookie = Tokens.RefreshToken.Token;
-                    context.Request.Headers.Authorization = "Bearer " + Tokens.JwtToken;
-                    SetResponseCookieRefreshToken(Tokens.RefreshToken, context);
+                try
+                {
+                    context.User = tokenService.ValidateAccessToken(token);
+                }
+                catch (SecurityTokenExpiredException)
+                {
+                    token = await TryGetNewJwtTokenUsingRefreshTokenAsync(context, userRepository);
+                    context.User = tokenService.ValidateAccessToken(token);
                 }
             }
             await requestDelegate(context);
+        }
+
+        private async Task<string> TryGetNewJwtTokenUsingRefreshTokenAsync(HttpContext context, IUserRepository userRepository)
+        {
+            context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+
+            if (refreshToken == null)
+                throw new UserNeedToLoginException();
+
+            var Tokens = await userRepository.RefreshTokenAsync(refreshToken);
+
+            SetResponseCookieRefreshToken(Tokens.RefreshToken, context);
+
+            return Tokens.JwtToken;
         }
 
         private void SetResponseCookieRefreshToken(RefreshTokenDto refreshToken, HttpContext context)
