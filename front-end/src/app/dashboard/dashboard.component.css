@@ -1,0 +1,21 @@
+.flex-container {
+    margin: 20px;
+    background-color: rgba(193, 224, 235, 0.699);
+    display: grid;
+    grid-template-rows: min-content min-content;
+    min-width: fit-content;
+}
+
+.card-container {
+    margin: 20px;
+    background-color: rgba(193, 224, 235, 0.699);
+    
+}
+
+.header{
+    margin: 20px;
+    border: 1px solid;
+    text-align: center;
+    border-radius: 10px;
+    background-color: lightsalmon;
+}

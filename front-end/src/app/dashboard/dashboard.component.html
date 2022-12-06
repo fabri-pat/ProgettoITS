@@ -1,0 +1,9 @@
+
+<div class="flex-container">
+    <div class="header">
+        <div class="title" ><h1 *ngIf="title">{{title}}</h1></div>
+    </div>
+    <div class="card-container" *ngFor="let c of cards">
+        <div class="card"><app-card-component [card]="c"></app-card-component></div>
+    </div>
+</div>

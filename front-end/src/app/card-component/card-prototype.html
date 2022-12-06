@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Prototype</title>
+    <style>
+        .card{
+            max-width: 600px;
+            min-width: 250px;
+            min-height: 80px;
+            width: min-content;
+            height: min-content;
+            background: rgb(90, 158, 226);
+            color: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            display: grid;
+            grid-template-rows: 30% 70%;
+            padding: 10px;
+        }
+
+        .body {
+            display: grid;
+            grid-template-columns: 80% 20%;
+        }
+
+        .button {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <p>Questo è l'header</p>
+        </div>
+        <div class="body">
+            <div class="description">
+                <p>Qui abbiamo la nostra bellissima descrizione della card</p>
+            </div>
+            <div class="button" *ngIf="card.button">
+                <p>TODO: Bottone iconcina</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
