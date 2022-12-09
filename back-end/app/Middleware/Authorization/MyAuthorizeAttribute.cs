@@ -20,7 +20,5 @@ namespace app.Middleware.Authorization
                     throw new UnauthorizedAccessException("You can't access to specified resource. Restricted");
             }
         }
-
-
     }
 }

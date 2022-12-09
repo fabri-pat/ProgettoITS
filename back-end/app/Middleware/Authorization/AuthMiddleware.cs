@@ -1,6 +1,7 @@
 
 using app.Dtos;
 using app.MyException;
+using app.Repositories;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,10 +27,8 @@ namespace app.Middleware.Authorization
                 var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
 
                 if (token == null)
-                {
                     token = await TryGetNewJwtTokenUsingRefreshTokenAsync(context, userRepository);
-                }
-
+                
                 try
                 {
                     context.User = tokenService.ValidateAccessToken(token);

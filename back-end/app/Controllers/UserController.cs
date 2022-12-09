@@ -1,6 +1,7 @@
 
-using app.Middleware.Authorization;
 using app.Dtos;
+using app.Middleware.Authorization;
+using app.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace app.Controllers
@@ -20,14 +21,14 @@ namespace app.Controllers
         [MyAuthorize(Roles = "User")]
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
-            var users = (await userRepository.GetUsersAsync());
+            var users = (await userRepository.GetAllAsync());
             return users.Select(user => user.AsDto());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUserAsync(Guid id)
         {
-            var user = (await userRepository.GetUserAsync(id));
+            var user = (await userRepository.GetByIdAsync(id));
             if (user == null)
                 return NotFound();
             return Ok(user.AsDto());
@@ -36,7 +37,7 @@ namespace app.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<RegistrationResponseDto>> RegisterUser(RegistrationRequestDto request)
         {
-            var response = (await userRepository.CreateUserAsync(request));
+            var response = (await userRepository.CreateAsync(request));
             return Ok(new RegistrationResponseDto(response.AsDto(), true));
         }
 

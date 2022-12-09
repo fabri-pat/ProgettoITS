@@ -4,72 +4,50 @@ using MongoDB.Driver;
 
 namespace app.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : MongoRepository<User>, IUserRepository
     {
         private const string collectionName = "Users";
-
-        private readonly IMongoCollection<User> dbCollection;
-
-        private readonly FilterDefinitionBuilder<User> filterDefinitionBuilder = Builders<User>.Filter;
-
-        private readonly UpdateDefinitionBuilder<User> updateDefinitionBuilder = Builders<User>.Update;
 
         private readonly ITokenService tokenService;
 
         private readonly IPasswordService passwordService;
 
         public UserRepository(
+            IServiceProvider serviceProvider,
             ITokenService tokenService,
             IPasswordService passwordService
-            )
+            ) : base(serviceProvider.GetService<IMongoDatabase>()!, collectionName)
         {
-            var settings = MongoClientSettings.FromConnectionString(
-                "mongodb+srv://admin:se6676SSdFW1Z2gn@cluster0.oncf9mc.mongodb.net/?retryWrites=true&w=majority"
-            );
-            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-            var client = new MongoClient(settings);
-            var database = client.GetDatabase("MyProject");
-            dbCollection = database.GetCollection<User>(collectionName);
-
             this.tokenService = tokenService;
             this.passwordService = passwordService;
         }
-
-        public async Task<IReadOnlyCollection<User>> GetUsersAsync()
-        {
-            return await dbCollection.Find(filterDefinitionBuilder.Empty).ToListAsync<User>();
-        }
-
-        public async Task<User> GetUserAsync(Guid id)
+        
+        public async Task<User> GetUserByUsernameAsync(String username)
         {
             FilterDefinition<User> filter = filterDefinitionBuilder.Eq(
-                entity => entity.Id, id
+                entity => entity.Username, username
             );
+
             return await dbCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<User> CreateUserAsync(RegistrationRequestDto user)
+        public async Task<User> CreateAsync(RegistrationRequestDto user)
         {
             if (user == null)
                 throw new ArgumentNullException();
 
-            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(
-                entity => entity.Username, user.Username
+            if (await GetUserByUsernameAsync(user.Username) != null)
+                throw new ArgumentException("Username is already in use");
+
+            var userToSave = new User(
+                Guid.NewGuid(),
+                user.Name,
+                user.Surname,
+                user.Username,
+                passwordService.CreatePassword(user.Password),
+                "User"
             );
-
-            if (await dbCollection.Find(filter).FirstOrDefaultAsync() != null)
-            {
-                throw new ArgumentException("Username already in use.");
-            }
-
-            var userToSave = new User(Guid.NewGuid(),
-                    user.Name,
-                    user.Surname,
-                    user.Username,
-                    passwordService.CreatePassword(user.Password),
-                    "User"
-                );
-
+            
             await dbCollection.InsertOneAsync(userToSave);
 
             return userToSave;
@@ -146,17 +124,6 @@ namespace app.Repositories
             var result = await dbCollection.UpdateOneAsync(filter, update);
 
             return result.IsAcknowledged;
-        }
-
-        public async Task<User?> GetUserByUsernameAsync(String username)
-        {
-            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(
-                entity => entity.Username, username
-            );
-
-            User? user = await dbCollection.Find(filter).FirstOrDefaultAsync();
-
-            return user;
         }
     }
 }

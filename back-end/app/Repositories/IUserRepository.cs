@@ -1,12 +1,13 @@
 using app.Entities;
 using app.Dtos;
 
-public interface IUserRepository
+namespace app.Repositories
 {
-    Task<User> CreateUserAsync(RegistrationRequestDto user);
-    Task<User> GetUserAsync(Guid id);
-    Task<IReadOnlyCollection<User>> GetUsersAsync();
-    Task<LoginResponseDto> LoginUserAsync(LoginRequestDto loginRequestDto);
-    Task<RefreshTokenSuccessDto> RefreshTokenAsync(string refreshToken);
-    Task<User?> GetUserByUsernameAsync(String username);
+    public interface IUserRepository : IRepository<User>
+    {
+        Task<User> CreateAsync(RegistrationRequestDto user);
+        Task<LoginResponseDto> LoginUserAsync(LoginRequestDto loginRequestDto);
+        Task<RefreshTokenSuccessDto> RefreshTokenAsync(string refreshToken);
+        Task<User> GetUserByUsernameAsync(String username);
+    }
 }
