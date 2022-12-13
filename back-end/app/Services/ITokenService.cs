@@ -6,7 +6,7 @@ public interface ITokenService
 {
     String CreateAccessToken(User user);
     RefreshTokenDto GenerateRefreshToken();
-    byte[] EncryptRefreshToken(string refreshToken, byte[] hash);
+    RefreshToken EncryptRefreshToken(RefreshTokenDto refreshToken);
     bool VerifyRefreshToken(String token, RefreshToken refreshToken);
     ClaimsPrincipal ValidateAccessToken(string jwtToken);
 }

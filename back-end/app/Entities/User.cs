@@ -6,8 +6,9 @@ namespace app.Entities
         String Name,
         String Surname,
         String Username,
+        String Email,
         Password Password,
-        String Role
+        Role Role
         ) : IEntity
     {
         public RefreshToken RefreshToken { get; set; } = default!;

@@ -21,17 +21,13 @@ namespace app.Repositories
             this.tokenService = tokenService;
             this.passwordService = passwordService;
         }
-        
+
         public async Task<User> GetUserByUsernameAsync(String username)
         {
-            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(
-                entity => entity.Username, username
-            );
-
-            return await dbCollection.Find(filter).FirstOrDefaultAsync();
+            return await GetByExpressionAsync(x => x.Username == username);
         }
 
-        public async Task<User> CreateAsync(RegistrationRequestDto user)
+        public async Task RegisterUserAsync(RegistrationRequestDto user)
         {
             if (user == null)
                 throw new ArgumentNullException();
@@ -44,22 +40,17 @@ namespace app.Repositories
                 user.Name,
                 user.Surname,
                 user.Username,
+                user.Email,
                 passwordService.CreatePassword(user.Password),
-                "User"
+                Role.User
             );
-            
-            await dbCollection.InsertOneAsync(userToSave);
 
-            return userToSave;
+            await CreateAsync(userToSave);
         }
 
         public async Task<LoginResponseDto> LoginUserAsync(LoginRequestDto loginRequestDto)
         {
-            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(
-                entity => entity.Username, loginRequestDto.Username
-            );
-
-            User? user = await dbCollection.Find(filter).FirstOrDefaultAsync();
+            User? user = await GetUserByUsernameAsync(loginRequestDto.Username);
 
             if (user == null)
                 throw new ArgumentException("Username not valid.");
@@ -67,23 +58,18 @@ namespace app.Repositories
             if (!passwordService.VerifyPassword(loginRequestDto.Password, user.Password))
                 throw new ArgumentException("Password not valid.");
 
-            var token = tokenService.CreateAccessToken(user);
-
-            var refreshToken = tokenService.GenerateRefreshToken();
-
-            await UpdateRefreshTokenAsync(filter, refreshToken);
+            var updatedUser = await UpdateUserTokensAsync(user);
 
             return new LoginResponseDto(
                 Message: "User has been logged.",
-                JwtToken: token,
-                RefreshToken: refreshToken
+                JwtToken: updatedUser.JwtToken,
+                RefreshToken: updatedUser.RefreshToken
             );
         }
 
         public async Task<RefreshTokenSuccessDto> RefreshTokenAsync(String refreshToken)
         {
-            FilterDefinition<User> filter = filterDefinitionBuilder.Empty;
-            var users = await dbCollection.Find(filter).ToListAsync();
+            var users = await GetAllAsync();
 
             User? user = users
                 .Where(x => tokenService.VerifyRefreshToken(refreshToken, x.RefreshToken)).FirstOrDefault();
@@ -94,36 +80,23 @@ namespace app.Repositories
             if (user.RefreshToken.ExpirationDate < DateTime.Now)
                 throw new ArgumentException("Token expired.");
 
-            var _accessToken = tokenService.CreateAccessToken(user);
-            var _refreshToken = tokenService.GenerateRefreshToken();
-
-            filter = filterDefinitionBuilder.Eq(x => x.Username, user.Username);
-
-            await UpdateRefreshTokenAsync(filter, _refreshToken);
-
-            return new RefreshTokenSuccessDto(
-                JwtToken: _accessToken,
-                RefreshToken: _refreshToken
-            );
+            return await UpdateUserTokensAsync(user);
         }
 
-        private async Task<bool> UpdateRefreshTokenAsync(FilterDefinition<User> filter, RefreshTokenDto refreshToken)
+        private async Task<RefreshTokenSuccessDto> UpdateUserTokensAsync(User user)
         {
-            var hashCode = BitConverter.GetBytes(refreshToken.CreatedDate.GetHashCode());
+            var accessToken = tokenService.CreateAccessToken(user);
 
-            var encryptedToken = tokenService.EncryptRefreshToken(refreshToken.Token, hashCode);
+            var refreshToken = tokenService.GenerateRefreshToken();
 
-            var newRefreshToken = new RefreshToken(
-                encryptedToken,
-                hashCode,
-                refreshToken.CreatedDate, refreshToken.ExpirationDate
+            user.RefreshToken = tokenService.EncryptRefreshToken(refreshToken);
+
+            await UpdateAsync(user);
+
+            return new RefreshTokenSuccessDto(
+                JwtToken: accessToken,
+                RefreshToken: refreshToken
             );
-
-            var update = updateDefinitionBuilder.Set("RefreshToken", newRefreshToken);
-
-            var result = await dbCollection.UpdateOneAsync(filter, update);
-
-            return result.IsAcknowledged;
         }
     }
 }

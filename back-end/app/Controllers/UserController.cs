@@ -1,5 +1,6 @@
 
 using app.Dtos;
+using app.Entities;
 using app.Middleware.Authorization;
 using app.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace app.Controllers
         }
 
         [HttpGet]
-        [MyAuthorize(Roles = "User")]
+        [MyAuthorize(Roles = Role.Guest)]
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             var users = (await userRepository.GetAllAsync());
@@ -35,10 +36,10 @@ namespace app.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<RegistrationResponseDto>> RegisterUser(RegistrationRequestDto request)
+        public async Task<ActionResult> RegisterUser(RegistrationRequestDto request)
         {
-            var response = (await userRepository.CreateAsync(request));
-            return Ok(new RegistrationResponseDto(response.AsDto(), true));
+            await userRepository.RegisterUserAsync(request);
+            return Ok($"{request.Username} is now registered.");
         }
 
         [HttpPost("login")]
@@ -51,16 +52,22 @@ namespace app.Controllers
             return Ok(response);
         }
 
+        [HttpPost("logout")]
+        public ActionResult Logout()
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok("You are now logged out");
+        }
+
         [HttpPost("refresh-token")]
         public async Task<ActionResult<RefreshTokenSuccessDto>> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            RefreshTokenSuccessDto response;
 
             if (refreshToken == null)
                 return Unauthorized("Refresh token not found. Please log.");
 
-            response = await userRepository.RefreshTokenAsync(refreshToken);
+            var response = await userRepository.RefreshTokenAsync(refreshToken);
 
             SetRefreshToken(response.RefreshToken);
             return Ok(response);

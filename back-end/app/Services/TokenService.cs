@@ -21,7 +21,7 @@ namespace app.Services
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(
@@ -33,7 +33,7 @@ namespace app.Services
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddSeconds(120),
+                expires: DateTime.Now.AddMinutes(10),
                 signingCredentials: credential
             );
 
@@ -69,7 +69,7 @@ namespace app.Services
                 },
                 out SecurityToken validatedToken
             );
-
+            
             return claimsPrincipal;
         }
 
@@ -85,13 +85,15 @@ namespace app.Services
             return refreshToken;
         }
 
-        public byte[] EncryptRefreshToken(string refreshToken, byte[] hash)
+        public RefreshToken EncryptRefreshToken(RefreshTokenDto refreshToken)
         {
-            var hmac = new HMACSHA512(hash);
+            var hashCode = BitConverter.GetBytes(refreshToken.CreatedDate.GetHashCode());
 
-            var refreshTokenHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(refreshToken));
+            var hmac = new HMACSHA512(hashCode);
 
-            return refreshTokenHash;
+            var refreshTokenHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(refreshToken.Token));
+
+            return new RefreshToken(refreshTokenHash, hashCode, refreshToken.CreatedDate, refreshToken.ExpirationDate);
         }
 
         public bool VerifyRefreshToken(String token, RefreshToken refreshToken)
