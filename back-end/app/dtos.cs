@@ -32,7 +32,6 @@ namespace app.Dtos
     public record LoginResponseDto(
         String Message,
         String JwtToken,
-        [property: JsonIgnore]
         RefreshTokenDto RefreshToken
     );
 
@@ -44,7 +43,6 @@ namespace app.Dtos
 
     public record RefreshTokenSuccessDto(
         String JwtToken,
-        [property: JsonIgnore]
         RefreshTokenDto RefreshToken
     );
 }

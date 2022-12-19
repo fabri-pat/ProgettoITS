@@ -2,6 +2,7 @@
 using app.Dtos;
 using app.MyException;
 using app.Repositories;
+using app.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,23 +26,22 @@ namespace app.Middleware.Authorization
             if (hasAuthorizeAttribute)
             {
                 context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+                context.Request.Cookies.TryGetValue("accessToken", out var accessToken);
 
                 if (refreshToken == null)
                     throw new UserNeedToLoginException("Please login to access to the request resource.");
 
-                var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
-
-                if (token == null)
-                    token = await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
-
                 try
                 {
-                    context.User = tokenService.ValidateAccessToken(token);
+                    context.User = tokenService.ValidateAccessToken(accessToken!);
                 }
                 catch (SecurityTokenExpiredException)
                 {
-                    token = await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
-                    context.User = tokenService.ValidateAccessToken(token);
+                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
+                }
+                catch (ArgumentNullException)
+                {
+                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
                 }
             }
             await requestDelegate(context);
@@ -51,20 +51,9 @@ namespace app.Middleware.Authorization
         {
             var Tokens = await userRepository.RefreshTokenAsync(refreshToken);
 
-            SetResponseCookieRefreshToken(Tokens.RefreshToken, context);
+            CookieService.SetResponseCookies(context, Tokens.JwtToken, Tokens.RefreshToken.Token);
 
             return Tokens.JwtToken;
-        }
-
-        private void SetResponseCookieRefreshToken(RefreshTokenDto refreshToken, HttpContext context)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = refreshToken.ExpirationDate,
-                Secure = true
-            };
-            context.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
         }
     }
 

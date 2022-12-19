@@ -3,6 +3,7 @@ using app.Dtos;
 using app.Entities;
 using app.Middleware.Authorization;
 using app.Repositories;
+using app.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace app.Controllers
@@ -43,24 +44,25 @@ namespace app.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponseDto>> LoginUser(LoginRequestDto loginRequest)
+        public async Task<ActionResult> LoginUser(LoginRequestDto loginRequest)
         {
             var response = (await userRepository.LoginUserAsync(loginRequest));
 
-            SetRefreshToken(response.RefreshToken);
+            CookieService.SetResponseCookies(this.HttpContext, response.JwtToken, response.RefreshToken.Token);
 
-            return Ok(response);
+            return Ok(response.Message);
         }
 
         [HttpPost("logout")]
         public ActionResult Logout()
         {
             Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("accessToken");
             return Ok("You are now logged out");
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<RefreshTokenSuccessDto>> RefreshToken()
+        public async Task<ActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
 
@@ -69,19 +71,9 @@ namespace app.Controllers
 
             var response = await userRepository.RefreshTokenAsync(refreshToken);
 
-            SetRefreshToken(response.RefreshToken);
-            return Ok(response);
-        }
+            CookieService.SetResponseCookies(this.HttpContext, response.JwtToken, response.RefreshToken.Token);
 
-        private void SetRefreshToken(RefreshTokenDto refreshToken)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = refreshToken.ExpirationDate,
-                Secure = true
-            };
-            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+            return Ok();
         }
     }
 }
