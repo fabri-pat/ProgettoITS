@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { RegistrationService } from '../service/login-registration.service';
+import { LoginRegistrationService } from '../../service/login-registration.service';
 
 @Component({
   selector: 'app-login-registration-form',
   templateUrl: './login-registration-form.component.html',
   styleUrls: ['./login-registration-form.component.css']
 })
-export class RegistrationFormComponent implements OnInit {
+export class LoginRegistrationFormComponent implements OnInit {
 
-  constructor(private registrationService: RegistrationService) { }
+  constructor(private loginRegistrationService: LoginRegistrationService) { }
 
   ngOnInit(): void {
     const signUpButton = <HTMLBodyElement>document.getElementById('signUp');
@@ -28,7 +28,7 @@ export class RegistrationFormComponent implements OnInit {
     var username = (<HTMLInputElement>document.getElementById("login-username")).value;
     var password = (<HTMLInputElement>document.getElementById("login-password")).value;
 
-    this.registrationService.login(username, password);
+    this.loginRegistrationService.login(username, password);
   }
 
   signup() {
@@ -38,6 +38,6 @@ export class RegistrationFormComponent implements OnInit {
     var email = (<HTMLInputElement>document.getElementById("signup-email")).value;
     var password = (<HTMLInputElement>document.getElementById("signup-password")).value;
 
-    this.registrationService.signup(name, surname, username, email, password);
+    this.loginRegistrationService.signup(name, surname, username, email, password);
   }
 }

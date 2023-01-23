@@ -69,7 +69,7 @@ namespace app.Services
                 },
                 out SecurityToken validatedToken
             );
-            
+
             return claimsPrincipal;
         }
 
@@ -98,6 +98,9 @@ namespace app.Services
 
         public bool VerifyRefreshToken(String token, RefreshToken refreshToken)
         {
+            if (refreshToken.ExpirationDate < DateTime.Now)
+                return false;
+
             var key = refreshToken.Sst;
 
             var hmac = new HMACSHA512(key);

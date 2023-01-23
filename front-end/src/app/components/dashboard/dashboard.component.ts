@@ -1,9 +1,9 @@
 
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Card, CARDS } from '../models/card';
-import { CardErrorHandlerService } from '../service/card-error-handler.service';
-import { CardService } from '../service/card.service';
+import { Card, CARDS } from '../../models/card';
+import { CardErrorHandlerService } from '../../service/card-error-handler.service';
+import { CardService } from '../../service/card.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,8 +12,8 @@ import { CardService } from '../service/card.service';
 })
 export class DashboardComponent implements OnInit {
 
-  cards! :Card[];
-  title?: string = "My dashboard";
+  cards!: Card[];
+  title?: string = "Dashboard";
   cardFromUrl?: any[];
 
   constructor(private cardService: CardService, private cardErrorHandler: CardErrorHandlerService<Card[]>) {
@@ -22,32 +22,33 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.cardService
-    .getCards()
-    .subscribe(
-      {next: data => {
-        if(data.ok){
-          this.cards = data.body!
-          .map((x: any) => {
-            return {
-              title: x.title,
-              description: x.description,
-              button: x.icon ? x.icon : x.button
-            } as Card;
-          });  
+      .getCards()
+      .subscribe(
+        {
+          next: data => {
+            if (data.ok) {
+              this.cards = data.body!
+                .map((x: any) => {
+                  return {
+                    title: x.title,
+                    description: x.description,
+                    button: x.icon ? x.icon : x.button
+                  } as Card;
+                });
+            }
+          },
+          error: (e: HttpErrorResponse) => {
+            this.cardErrorHandler.handleError(e, CARDS).subscribe({ next: data => this.cards = data.body! });
+          }
         }
-      },
-      error: (e :HttpErrorResponse) => {
-        this.cardErrorHandler.handleError(e, CARDS).subscribe({ next: data => this.cards = data.body!});
-      }
-    }
-    )
+      )
   }
 
-  public get CardService(){
+  public get CardService() {
     return this.cardService;
   }
 
-  public set CardService(cardService: CardService){
+  public set CardService(cardService: CardService) {
     this.cardService = cardService;
   }
 }

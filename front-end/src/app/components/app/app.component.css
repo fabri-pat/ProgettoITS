@@ -1,0 +1,45 @@
+div a {
+    font-size: 18px;
+    color: #fff;
+    display: block;
+    padding: 20px; 
+    padding-left: 40px; 
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.logo-container {
+    height: 60px;
+    margin: 10px 30px;
+    max-height: 70px;
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    align-items: center;
+}
+
+.logo-image-container {
+    display: flex;
+    max-width: 40px;
+    max-height: inherit;
+    width: inherit;
+    height: inherit;
+    justify-items: center;
+}
+
+.logo-text {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-items: center;
+    align-items: center;
+}
+
+.logo-text>p {
+    text-transform: none;
+    font-weight: 500;
+    letter-spacing: normal;
+    font-family: Continuum;
+    font-size: 52px;
+    padding-top: 7px;
+}

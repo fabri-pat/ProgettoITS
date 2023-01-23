@@ -1,10 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RegistrationService {
+export class LoginRegistrationService {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -13,9 +14,13 @@ export class RegistrationService {
 
     const header = new HttpHeaders().set('Content-Type', 'application/json');
 
-    const httpLoginReq = this.httpClient.post("https://localhost:7155/api/v1/User/login", body, { headers: header, observe: "response", responseType: "text", withCredentials: true });
+    const httpLoginReq = this.httpClient.post<any>("https://localhost:7155/api/v1/User/login", body, { headers: header, observe: "body", responseType: "json", withCredentials: true });
 
-    httpLoginReq.subscribe();
+    httpLoginReq.subscribe((data: any) => {
+      const user: User = new User(data.user.id, data.user.name, data.user.surname, data.user.username);
+      localStorage.setItem('user', JSON.stringify(user));
+      console.log(data.message);
+    });
   }
 
   signup(name: String, surname: String, username: String, email: String, password: String) {

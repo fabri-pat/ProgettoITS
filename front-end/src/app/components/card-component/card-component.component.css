@@ -1,9 +1,9 @@
 .card{
     max-width: 600px;
     min-width: 250px;
-    min-height: 80px;
-    width: min-content;
-    height: min-content;
+    height: 80px;
+    width: auto;
+    
     background: rgb(90, 158, 226);
     color: white;
     border: 2px solid black;

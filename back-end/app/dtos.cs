@@ -8,7 +8,8 @@ namespace app.Dtos
         Guid Id,
         String Name,
         String Surname,
-        String Username
+        String Username,
+        String Email
     );
 
     public record RegistrationRequestDto(
@@ -31,7 +32,10 @@ namespace app.Dtos
 
     public record LoginResponseDto(
         String Message,
+        UserDto User,
+        [property: JsonIgnore]
         String JwtToken,
+        [property: JsonIgnore]
         RefreshTokenDto RefreshToken
     );
 

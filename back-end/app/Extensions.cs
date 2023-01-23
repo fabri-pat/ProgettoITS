@@ -7,7 +7,7 @@ namespace app
     {
         public static UserDto AsDto(this User user)
         {
-            return new UserDto(user.Id, user.Name, user.Surname, user.Username);
+            return new UserDto(user.Id, user.Name, user.Surname, user.Username, user.Email);
         }
     }
 }

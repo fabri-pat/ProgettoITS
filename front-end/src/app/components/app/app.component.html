@@ -1,0 +1,114 @@
+<style>
+    @font-face {
+        font-family: Continuum;
+        src: url('assets/fonts/continuum/contm.ttf');
+    }
+
+    .container {
+        height: 100%;
+        display: grid;
+        grid-template-columns: min-content auto;
+    }
+
+    .sidebar {
+        color: #fff;
+        width: 230px;
+        height: 1fr;
+        background-image: linear-gradient(180deg, #4e73df, #1f41a8);
+        border-top-right-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        font-family: Nunito, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-weight: 500;
+    }
+
+    img {
+        object-fit: contain;
+        max-width: inherit;
+        max-height: inherit;
+    }
+
+    .navbar {
+        box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15) !important;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        display: flex;
+        position: relative;
+        max-height: inherit;
+        height: 70px;
+        max-height: 70px;
+        margin-bottom: 1.5rem;
+    }
+
+    .image {
+        padding-top: 0.5rem;
+        max-height: 100%;
+        max-width: 80%;
+    }
+
+    [router],
+    router-outlet+* {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .navigable {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .renderizable {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .sidebar-divider {
+        border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+        margin: 0 1rem 0rem;
+        box-sizing: content-box;
+    }
+
+    .sidebar>.logo-click {
+        padding: 0px;
+    }
+
+    .container{
+        min-width: fit-content;
+    }
+</style>
+
+<div class="container">
+    <div class="sidebar">
+        <a href="" class="logo-click">
+            <div class="logo-container">
+                <div class="logo-image-container">
+                    <img src="https://intranet.linksmt.it/images/links_onlylogo.png">
+                </div>
+                <div class="logo-text">
+                    <p>Links</p>
+                </div>
+            </div>
+        </a>
+        <hr class="sidebar-divider">
+        <a href="javascript:void(0)">
+            <i class="fa fa-user-o" aria-hidden="true"></i>
+            Dashboard
+        </a>
+        <hr class="sidebar-divider">
+        <a href="javascript:void(0)">
+            <i class="fa fa-laptop" aria-hidden="true"></i>
+            Principale
+        </a>
+    </div>
+
+    <div class="navigable">
+        <div class="navbar">
+            <div class="image"><img src="https://intranet.linksmt.it/images/corporate.png?rand=79"></div>
+        </div>
+        <div router class="renderizable">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

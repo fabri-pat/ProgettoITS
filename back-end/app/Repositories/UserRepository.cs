@@ -61,7 +61,8 @@ namespace app.Repositories
             var updatedUser = await UpdateUserTokensAsync(user);
 
             return new LoginResponseDto(
-                Message: "User has been logged.",
+                Message: $"{user.Username} has been logged.",
+                User: user.AsDto(),
                 JwtToken: updatedUser.JwtToken,
                 RefreshToken: updatedUser.RefreshToken
             );

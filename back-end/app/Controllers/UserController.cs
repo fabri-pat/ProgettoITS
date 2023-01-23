@@ -44,13 +44,13 @@ namespace app.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> LoginUser(LoginRequestDto loginRequest)
+        public async Task<ActionResult<LoginResponseDto>> LoginUser(LoginRequestDto loginRequest)
         {
             var response = (await userRepository.LoginUserAsync(loginRequest));
 
             CookieService.SetResponseCookies(this.HttpContext, response.JwtToken, response.RefreshToken.Token);
 
-            return Ok(response.Message);
+            return Ok(response);
         }
 
         [HttpPost("logout")]
