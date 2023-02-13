@@ -1,3 +1,4 @@
+using app.Helpers;
 using app.Middleware.Authorization;
 using app.Repositories;
 using app.Services;
@@ -14,7 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMongo();
 
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 // Configure Dependency Injection 
+builder.Services.AddScoped<IEMailService, EmailService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();

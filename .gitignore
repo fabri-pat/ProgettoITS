@@ -44,5 +44,8 @@ Thumbs.db
 front-end/node_modules
 front-end/.vscode
 front-end/.angular
+back-end/obj
 back-end/app/obj
 back-end/app/bin
+back-end/app.UnitTests/bin
+back-end/app.UnitTests/obj

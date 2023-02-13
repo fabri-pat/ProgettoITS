@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,17 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'my-app';
+
+  @Input()
+  user!: User;
+
+  isLogged() :boolean {
+    var userString = localStorage.getItem('user');
+
+    if (userString != null){
+      this.user = (JSON.parse(userString) as User)
+      return true;
+    }
+    return false;
+  }
 }

@@ -33,6 +33,7 @@
         align-items: center;
         padding: 0.5rem 1rem;
         display: flex;
+        flex-direction: row;
         position: relative;
         max-height: inherit;
         height: 70px;
@@ -40,7 +41,34 @@
         margin-bottom: 1.5rem;
     }
 
+    .profile {
+        display: flex;
+        flex: auto;
+        flex-direction: row;
+        height: 100%;
+    }
+
+    .profile-name {
+        display: flex;
+        width: 70%;
+        justify-content: center;
+        align-items: center;
+        
+    }
+
+    .profile-name-text {
+        font-size: 18px;
+        font-style: italic;
+        font-weight: 500;
+        color: #858796!important;
+    }
+
+    .profile-image {
+        width: 30%;
+    }
+    
     .image {
+        display: flex;
         padding-top: 0.5rem;
         max-height: 100%;
         max-width: 80%;
@@ -92,7 +120,7 @@
             </div>
         </a>
         <hr class="sidebar-divider">
-        <a href="javascript:void(0)">
+        <a href="/dashboard">
             <i class="fa fa-user-o" aria-hidden="true"></i>
             Dashboard
         </a>
@@ -105,7 +133,14 @@
 
     <div class="navigable">
         <div class="navbar">
-            <div class="image"><img src="https://intranet.linksmt.it/images/corporate.png?rand=79"></div>
+            <div class="image"><img src="/assets/images/navbar_logo.png">
+            </div>
+            <div class="profile" *ngIf="isLogged()">
+                <div class="profile-name" >
+                    <div class="profile-name-text">{{user.name}} {{user.surname}}</div>
+                </div>
+                <div class="profile-image"></div>
+            </div>
         </div>
         <div router class="renderizable">
             <router-outlet></router-outlet>

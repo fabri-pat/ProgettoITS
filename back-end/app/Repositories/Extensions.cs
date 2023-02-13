@@ -1,3 +1,4 @@
+using app.Helpers;
 using MongoDB.Driver;
 
 namespace app.Repositories
@@ -6,11 +7,11 @@ namespace app.Repositories
     {
         public static IServiceCollection AddMongo(this IServiceCollection services)
         {
-            services.AddSingleton(serviceProvider =>
+            services.AddScoped(serviceProvider =>
             {
                 var configuration = serviceProvider.GetService<IConfiguration>();
-                var connectionString = configuration!.GetSection("Mongo:ConnectionString").Value;
-                var databaseName = configuration.GetSection("Mongo:DatabaseName").Value;
+                var connectionString = configuration!.GetSection("MongoSettings:ConnectionString").Value;
+                var databaseName = configuration.GetSection("MongoSettings:DatabaseName").Value;
                 var settings = MongoClientSettings.FromConnectionString(connectionString);
                 settings.ServerApi = new ServerApi(ServerApiVersion.V1);
                 var mongoClient = new MongoClient(settings);

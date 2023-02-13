@@ -14,12 +14,14 @@ import { FormsModule } from '@angular/forms';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LoginRegistrationFormComponent } from './components/login-registration-form/login-registration-form.component';
 import { RouterModule, Routes } from '@angular/router';
+import { TrialDynamicComponentComponent } from './components/trial-dynamic-component/trial-dynamic-component.component';
 
 
 const routes: Routes = [
   { path: 'login', component: LoginRegistrationFormComponent },
   { path: 'register', component: LoginRegistrationFormComponent },
-  { path: 'dashboard', component: DashboardComponent},
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'trial', component: TrialDynamicComponentComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
@@ -28,7 +30,8 @@ const routes: Routes = [
     AppComponent,
     CardComponentComponent,
     DashboardComponent,
-    LoginRegistrationFormComponent
+    LoginRegistrationFormComponent,
+    TrialDynamicComponentComponent
   ],
   imports: [
     BrowserModule,

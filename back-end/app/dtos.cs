@@ -49,4 +49,16 @@ namespace app.Dtos
         String JwtToken,
         RefreshTokenDto RefreshToken
     );
+
+    public record ResetPasswordRequestDto(
+        String Email
+    )
+    {
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+            ErrorMessage = "Password must have at least one uppercase letter, one lowercase letter, one number and one special character")]
+        public String NewPassword { get; init; } = default!;
+
+        [Compare("NewPassword", ErrorMessage = "Confirm password and password don't match")]
+        public String NewPasswordConfirm { get; set; } = default!;
+    };
 }

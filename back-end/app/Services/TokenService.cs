@@ -109,5 +109,13 @@ namespace app.Services
 
             return refreshTokenHash.SequenceEqual(refreshToken.Token);
         }
+
+        public ResetToken GenerateResetToken()
+        {
+            return new ResetToken(
+                Token: Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                ExpireDate: DateTime.Now.AddMinutes(15)
+            );
+        }
     }
 }

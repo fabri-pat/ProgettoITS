@@ -9,4 +9,5 @@ public interface ITokenService
     RefreshToken EncryptRefreshToken(RefreshTokenDto refreshToken);
     bool VerifyRefreshToken(String token, RefreshToken refreshToken);
     ClaimsPrincipal ValidateAccessToken(string jwtToken);
+    ResetToken GenerateResetToken();
 }

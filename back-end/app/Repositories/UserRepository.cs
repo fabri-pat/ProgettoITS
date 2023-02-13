@@ -1,5 +1,6 @@
 using app.Dtos;
 using app.Entities;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
 namespace app.Repositories
@@ -36,13 +37,13 @@ namespace app.Repositories
                 throw new ArgumentException("Username is already in use");
 
             var userToSave = new User(
-                Guid.NewGuid(),
-                user.Name,
-                user.Surname,
-                user.Username,
-                user.Email,
-                passwordService.CreatePassword(user.Password),
-                Role.User
+                id: Guid.NewGuid(),
+                name: user.Name,
+                surname: user.Surname,
+                username: user.Username,
+                email: user.Email,
+                role: Role.User,
+                password: passwordService.CreatePassword(user.Password)
             );
 
             await CreateAsync(userToSave);
@@ -98,6 +99,31 @@ namespace app.Repositories
                 JwtToken: accessToken,
                 RefreshToken: refreshToken
             );
+        }
+
+        public async Task<User?> ForgotPasswordAsync(String email)
+        {
+            var user = await GetByExpressionAsync(x => x.Email == email);
+
+            if (user != null)
+            {
+                user.ResetToken = tokenService.GenerateResetToken();
+                await UpdateAsync(user);
+            }
+
+            return user != null ? user : null;
+        }
+
+        public async Task UpdatePasswordAsync(ResetPasswordRequestDto resetPasswordRequestDto)
+        {
+            User? user = await GetByExpressionAsync(x => x.Email == resetPasswordRequestDto.Email);
+
+            if (user == null)
+                throw new ArgumentException("No user registrated with provided email.");
+
+            user.Password = passwordService.CreatePassword(resetPasswordRequestDto.NewPassword);
+
+            await UpdateAsync(user);
         }
     }
 }
