@@ -7,7 +7,7 @@
 /bazel-out
 
 # Node
-/node_modules
+node_modules
 npm-debug.log
 yarn-error.log
 
@@ -41,11 +41,13 @@ testem.log
 .DS_Store
 Thumbs.db
 
-front-end/*
 back-end/obj
 back-end/app/obj
 back-end/app/bin
 back-end/app.UnitTests/bin
 back-end/app.UnitTests/obj
+
+
+
 
 
