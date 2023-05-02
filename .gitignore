@@ -49,3 +49,5 @@ back-end/app/obj
 back-end/app/bin
 back-end/app.UnitTests/bin
 back-end/app.UnitTests/obj
+
+front-end/

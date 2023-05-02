@@ -1,16 +1,14 @@
 .card{
     max-width: 600px;
-    min-width: 250px;
-    height: 80px;
-    width: auto;
-    
-    background: rgb(90, 158, 226);
-    color: white;
-    border: 2px solid black;
+    min-width: 200px;
+    min-height: 80px;
+    width: min-content;
+    height: min-content;
+    color: #474747;
     border-radius: 10px;
     display: grid;
-    grid-template-rows: 30% 70%;
-    padding: 10px;
+    grid-template-rows: 25% 75%;
+    padding: 1.5rem;
 }
 
 .body {
@@ -20,6 +18,28 @@
 
 .button {
     text-align: center;
+}
+
+.header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.header-yellow {
+    color: #f6c23e;
+}
+
+.border-left-aquamarine {
+    border-left: 0.25rem solid #36b9cc;
+}
+
+.border-left-yellow {
+    border-left: 0.25rem solid #f6c23e;
+}
+
+.border-left-red {
+    border-left: 0.25rem solid #c94040;
 }
 
 
