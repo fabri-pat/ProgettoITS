@@ -41,7 +41,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.front-end/
+front-end/
 back-end/obj
 back-end/app/obj
 back-end/app/bin
