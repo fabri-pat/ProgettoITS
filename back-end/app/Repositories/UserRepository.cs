@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace app.Repositories
 {
-    public class UserRepository : MongoRepository<User>, IUserRepository
+    public class UserRepository : MongoRepository<User, Guid>, IUserRepository
     {
         private const string collectionName = "Users";
 

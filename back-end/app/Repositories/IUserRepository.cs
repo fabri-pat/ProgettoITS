@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace app.Repositories
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<User, Guid>
     {
         Task RegisterUserAsync(RegistrationRequestDto user);
         Task<LoginResponseDto> LoginUserAsync(LoginRequestDto loginRequestDto);

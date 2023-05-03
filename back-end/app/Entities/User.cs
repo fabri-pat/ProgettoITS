@@ -15,7 +15,7 @@ namespace app.Entities
         public ResetToken ResetToken { get; set; } = default!;
     }; */
 
-    public class User : IEntity
+    public class User : IEntity<Guid>
     {
         public User(Guid id, string name, string surname, string username, string email, Role role, Password password)
         {

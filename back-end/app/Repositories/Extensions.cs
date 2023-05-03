@@ -1,3 +1,4 @@
+using app.Entities;
 using app.Helpers;
 using MongoDB.Driver;
 
@@ -17,6 +18,18 @@ namespace app.Repositories
                 var mongoClient = new MongoClient(settings);
 
                 return mongoClient.GetDatabase(databaseName);
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddMongoRepository<T, K>(this IServiceCollection services, String collectionName)
+            where T : IEntity<K>
+        {
+            services.AddSingleton(serviceProvider =>
+            {
+                var database = serviceProvider.GetService<IMongoDatabase>();
+                return new MongoRepository<T, K>(database!, collectionName);
             });
 
             return services;

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace app.Repositories
 {
-    public abstract class MongoRepository<T> : IRepository<T> where T : IEntity
+    public class MongoRepository<T, K> : IRepository<T, K> where T : IEntity<K>
     {
         protected IMongoCollection<T> dbCollection;
         protected FilterDefinitionBuilder<T> filterDefinitionBuilder = Builders<T>.Filter;
@@ -16,12 +16,17 @@ namespace app.Repositories
             dbCollection = database.GetCollection<T>(collectionName);
         }
 
-        public virtual async Task<IReadOnlyCollection<T>> GetAllAsync()
+        public async Task<IReadOnlyCollection<T>> GetAllAsync()
         {
             return await dbCollection.Find(filterDefinitionBuilder.Empty).ToListAsync();
         }
+        
+        public async Task<IReadOnlyCollection<T>> GeAllByExpressionAsync(Expression<Func<T, bool>> filter)
+        {
+            return await dbCollection.Find(filter).ToListAsync();
+        }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        public async Task<T> GetByIdAsync(K id)
         {
             FilterDefinition<T> filter = filterDefinitionBuilder.Eq(
                 entity => entity.Id, id
@@ -30,12 +35,12 @@ namespace app.Repositories
             return await dbCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public virtual async Task<T> GetByExpressionAsync(Expression<Func<T, bool>> filter)
+        public async Task<T> GetByExpressionAsync(Expression<Func<T, bool>> filter)
         {
             return await dbCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public virtual async Task CreateAsync(T entity)
+        public async Task CreateAsync(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -44,7 +49,7 @@ namespace app.Repositories
             return;
         }
 
-        public virtual async Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -53,7 +58,7 @@ namespace app.Repositories
             await dbCollection.ReplaceOneAsync(filter, entity);
         }
 
-        public virtual async Task RemoveAsync(Guid id)
+        public async Task RemoveAsync(K id)
         {
             FilterDefinition<T> filter = filterDefinitionBuilder.Eq(x => x.Id, id);
             await dbCollection.DeleteOneAsync(filter);

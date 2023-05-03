@@ -1,8 +1,8 @@
 
 namespace app.Entities
 {
-    public interface IEntity
+    public interface IEntity<K>
     {
-        Guid Id { get; init; }
+        K Id { get; init; }
     }
 }
