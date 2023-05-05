@@ -1,8 +1,9 @@
+using app.BusinessLogicLayer;
 using app.Entities;
 using app.Helpers;
 using app.Middleware.Authorization;
-using app.Repositories;
 using app.Services;
+using MongoDbBaseRepository.MongoDB;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +16,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMongo()
-                .AddMongoRepository<User, Guid>("Users");
+                .AddMongoRepository<User, Guid>(typeof(User).Name);
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 // Configure Dependency Injection 
 builder.Services.AddScoped<IEMailService, EmailService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+/* builder.Services.AddScoped<IUserRepository, UserRepository>(); */
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+
 
 builder.Services.AddCors(options =>
 {

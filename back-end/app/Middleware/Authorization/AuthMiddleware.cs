@@ -1,7 +1,6 @@
 
-using app.Dtos;
+using app.BusinessLogicLayer;
 using app.MyException;
-using app.Repositories;
 using app.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +17,7 @@ namespace app.Middleware.Authorization
 
         public async Task InvokeAsync(
             HttpContext context,
-            IUserRepository userRepository,
+            IUserService userService,
             ITokenService tokenService)
         {
             bool hasAuthorizeAttribute = context.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata.Any(x => x is MyAuthorizeAttribute) ?? false;
@@ -37,19 +36,19 @@ namespace app.Middleware.Authorization
                 }
                 catch (SecurityTokenExpiredException)
                 {
-                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
+                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userService, context);
                 }
                 catch (ArgumentNullException)
                 {
-                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userRepository, context);
+                    await TryGetNewJwtTokenUsingRefreshTokenAsync(refreshToken, userService, context);
                 }
             }
             await requestDelegate(context);
         }
 
-        private async Task<string> TryGetNewJwtTokenUsingRefreshTokenAsync(String refreshToken, IUserRepository userRepository, HttpContext context)
+        private async Task<string> TryGetNewJwtTokenUsingRefreshTokenAsync(String refreshToken, IUserService userService, HttpContext context)
         {
-            var Tokens = await userRepository.RefreshTokenAsync(refreshToken);
+            var Tokens = await userService.RefreshTokenAsync(refreshToken);
 
             CookieService.SetResponseCookies(context, Tokens.JwtToken, Tokens.RefreshToken.Token);
 

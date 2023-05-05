@@ -1,8 +1,8 @@
 
+using app.BusinessLogicLayer;
 using app.Dtos;
 using app.Entities;
 using app.Middleware.Authorization;
-using app.Repositories;
 using app.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,26 +12,24 @@ namespace app.Controllers
     [Route("api/v1/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository userRepository;
-        private readonly IEMailService eMailService;
+        private readonly IUserService userService;
 
-        public UserController(IUserRepository userRepository, IEMailService eMailService)
+        public UserController(IUserService userService)
         {
-            this.userRepository = userRepository;
-            this.eMailService = eMailService;
+            this.userService = userService;
         }
 
         [HttpGet]
         [MyAuthorize(Roles = Role.Guest)]
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
-            return (await userRepository.GetAllAsync()).Select(user => user.AsDto());
+            return (await userService.GetAllUsersAsync()).Select(user => user.AsDto());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUserAsync(Guid id)
         {
-            var user = (await userRepository.GetByIdAsync(id));
+            var user = (await userService.GetUserByIdAsync(id));
             if (user == null)
                 return NotFound();
             return user.AsDto();
@@ -41,14 +39,14 @@ namespace app.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUserAsync(RegistrationRequestDto request)
         {
-            await userRepository.RegisterUserAsync(request);
+            await userService.RegisterUserAsync(request);
             return Ok($"{request.Username} is now registered.");
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> LoginUserAsync(LoginRequestDto loginRequest)
         {
-            var response = (await userRepository.LoginUserAsync(loginRequest));
+            var response = (await userService.LoginUserAsync(loginRequest));
 
             CookieService.SetResponseCookies(this.HttpContext, response.JwtToken, response.RefreshToken.Token);
 
@@ -71,7 +69,7 @@ namespace app.Controllers
             if (refreshToken == null)
                 return Unauthorized("Refresh token not found. Please log.");
 
-            var response = await userRepository.RefreshTokenAsync(refreshToken);
+            var response = await userService.RefreshTokenAsync(refreshToken);
 
             CookieService.SetResponseCookies(this.HttpContext, response.JwtToken, response.RefreshToken.Token);
 
@@ -84,14 +82,7 @@ namespace app.Controllers
             if (String.IsNullOrEmpty(email))
                 return BadRequest("Null or empty email provided");
 
-            User? user = await userRepository.ForgotPasswordAsync(email);
-
-            if (user != null)
-                await eMailService.SendAsync(
-                to: user.Email,
-                subject: "Reset password",
-                body: String.Format("<a href='https://localhost:7155/api/v1/User/reset-password?token={0}'>Clicca qui</a href> per cambiare la password.", user.ResetToken.Token)
-                );
+            await userService.ForgotPasswordAsync(email);
 
             return Ok("Email send successfully");
         }
@@ -99,7 +90,7 @@ namespace app.Controllers
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPasswordAsync(String token)
         {
-            User? user = await userRepository.GetByExpressionAsync(x => x.ResetToken.Token == token);
+            User? user = await userService.GetUserByRefreshTokenAsync(token);
 
             if (user == null || ((DateTime.Now.ToUniversalTime()) > user.ResetToken.ExpireDate))
                 return BadRequest();
@@ -110,7 +101,7 @@ namespace app.Controllers
         [HttpPost("update-password")]
         public async Task<IActionResult> UpdatePasswordAsync(ResetPasswordRequestDto resetPasswordRequest)
         {
-            await userRepository.UpdatePasswordAsync(resetPasswordRequest);
+            await userService.UpdatePasswordAsync(resetPasswordRequest);
 
             return Ok("Password changed successfully.");
         }

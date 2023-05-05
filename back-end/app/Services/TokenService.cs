@@ -26,7 +26,7 @@ namespace app.Services
 
             var key = new SymmetricSecurityKey(
                 System.Text.Encoding.UTF8.GetBytes(
-                    this.configuration.GetSection("AppSettings:Token").Value)
+                    this.configuration.GetSection("AppSettings:Token").Value!)
             );
 
             var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -48,7 +48,7 @@ namespace app.Services
 
             var key = new SymmetricSecurityKey(
                 System.Text.Encoding.UTF8.GetBytes(
-                    this.configuration.GetSection("AppSettings:Token").Value
+                    this.configuration.GetSection("AppSettings:Token").Value!
                 )
             );
 
@@ -59,7 +59,7 @@ namespace app.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(
-                            this.configuration.GetSection("AppSettings:Token").Value
+                            this.configuration.GetSection("AppSettings:Token").Value!
                         )
                     ),
                     ValidateIssuer = false,

@@ -1,4 +1,8 @@
 
+
+
+using MongoDbBaseRepository;
+
 namespace app.Entities
 {
     /* public record User(
