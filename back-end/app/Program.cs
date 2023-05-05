@@ -22,7 +22,6 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Email
 
 // Configure Dependency Injection 
 builder.Services.AddScoped<IEMailService, EmailService>();
-/* builder.Services.AddScoped<IUserRepository, UserRepository>(); */
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();

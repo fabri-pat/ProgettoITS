@@ -7,25 +7,12 @@ namespace app.BusinessLogicLayer
 {
     public class UserService : IUserService
     {
-        /* private readonly IUserRepository userRepository; */
-         private readonly IRepository<User, Guid> userRepository; 
+        private readonly IRepository<User, Guid> userRepository;
         private readonly IEMailService emailService;
         private readonly ITokenService tokenService;
         private readonly IPasswordService passwordService;
 
-        /* public UserService(
-                    IUserRepository userRepository,
-                    IEMailService emailService,
-                    ITokenService tokenService,
-                    IPasswordService passwordService)
-        {
-            this.userRepository = userRepository;
-            this.emailService = emailService;
-            this.tokenService = tokenService;
-            this.passwordService = passwordService;
-        } */
-
-        public UserService(
+         public UserService(
                     IRepository<User, Guid> userRepository,
                     IEMailService emailService,
                     ITokenService tokenService,
@@ -35,7 +22,7 @@ namespace app.BusinessLogicLayer
             this.emailService = emailService;
             this.tokenService = tokenService;
             this.passwordService = passwordService;
-        }
+        } 
 
         public async Task<IReadOnlyCollection<User>> GetAllUsersAsync()
         {
