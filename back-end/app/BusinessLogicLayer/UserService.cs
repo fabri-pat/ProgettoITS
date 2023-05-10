@@ -12,17 +12,17 @@ namespace app.BusinessLogicLayer
         private readonly ITokenService tokenService;
         private readonly IPasswordService passwordService;
 
-         public UserService(
-                    IRepository<User, Guid> userRepository,
-                    IEMailService emailService,
-                    ITokenService tokenService,
-                    IPasswordService passwordService)
+        public UserService(
+                   IRepository<User, Guid> userRepository,
+                   IEMailService emailService,
+                   ITokenService tokenService,
+                   IPasswordService passwordService)
         {
             this.userRepository = userRepository;
             this.emailService = emailService;
             this.tokenService = tokenService;
             this.passwordService = passwordService;
-        } 
+        }
 
         public async Task<IReadOnlyCollection<User>> GetAllUsersAsync()
         {
