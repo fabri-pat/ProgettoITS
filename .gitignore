@@ -47,6 +47,8 @@ back-end/app/obj
 back-end/app/bin
 back-end/app.UnitTests/bin
 back-end/app.UnitTests/obj
+back-end/app/appsettings.json
+back-end/app/appsettings.Development.json
 
 
 

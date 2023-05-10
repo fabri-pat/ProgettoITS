@@ -7,6 +7,7 @@ using app.Entities;
 using app.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using MongoDbBaseRepository;
 using Moq;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace app.UnitTests;
 
 public class UserControllerTests
 {
-    /* private readonly Mock<IUserRepository> userRepositoryMock = new Mock<IUserRepository>();
+    /* private readonly Mock<IRepository<User, Guid>> userRepositoryMock = new Mock<IRepository<User, Guid>();
     private readonly Mock<IEMailService> emailServiceMock = new Mock<IEMailService>();
 
     [Fact]
